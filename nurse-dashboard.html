@@ -37,20 +37,16 @@
     }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script> <!-- jsPDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.13/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body class="bg-gray-100">
-
-  <!-- الهيدر -->
   <header class="bg-green-500 p-4 text-white flex justify-between items-center">
     <h1 class="text-xl font-bold">مدرسة حي السعد للتعليم الأساسي (1-4) - لوحة تحكم الممرضة</h1>
     <button onclick="logout()" class="bg-red-500 text-white py-1 px-4 rounded">تسجيل الخروج</button>
   </header>
 
-  <!-- المحتوى الرئيسي -->
   <main class="container mx-auto mt-8 p-4 bg-white shadow-lg rounded">
-
     <h2 class="text-2xl font-bold text-gray-700">الحالات الصحية للطلاب</h2>
 
     <!-- ميزة البحث والفرز -->
@@ -84,7 +80,7 @@
     <!-- عرض الطلاب حسب الصفوف -->
     <section class="mt-10">
       <div id="studentsCards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <!-- سيتم عرض البطاقات هنا -->
+        <!-- سيتم عرض بطاقات الطلاب هنا -->
       </div>
     </section>
 
@@ -151,7 +147,7 @@
   </footer>
 
   <script>
-    const apiUrl = 'https://api.github.com/repos/saidaladawi/School-health-data/contents/students_health.json';
+    const apiUrl = 'https://raw.githubusercontent.com/saidaladawi/School-health-data/main/students_health.json';
     let studentsData = [];
 
     // جلب بيانات الطلاب من GitHub
@@ -159,8 +155,7 @@
       fetch(apiUrl)
         .then(response => response.json())
         .then(data => {
-          const content = atob(data.content);
-          studentsData = JSON.parse(content).students;
+          studentsData = data.students;
           renderStudents(studentsData);
           renderChart(studentsData);
         })
@@ -276,14 +271,57 @@
       document.getElementById('addModal').style.display = 'none';
     }
 
+    // تحديث البيانات وإرسالها إلى GitHub باستخدام GitHub Actions
+    function updateDataOnGitHub() {
+      fetch('https://api.github.com/repos/saidaladawi/School-health-data/actions/workflows/students-health-data.yml/dispatches', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'token YOUR_GITHUB_TOKEN',
+          'Accept': 'application/vnd.github.v3+json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          "ref": "main"
+        })
+      })
+      .then(response => {
+        if (response.ok) {
+          alert('تم تحديث البيانات بنجاح');
+        } else {
+          alert('حدث خطأ أثناء التحديث');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+    }
+
+    // إرسال الطلب لتحديث ملف JSON ببيانات جديدة
+    document.getElementById('healthForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const newStudent = {
+        name: document.getElementById('name').value,
+        class: document.getElementById('class').value,
+        section: document.getElementById('section').value,
+        healthCondition: document.getElementById('healthCondition').value,
+        severity: document.getElementById('severity').value,
+        action: document.getElementById('action').value
+      };
+
+      studentsData.push(newStudent); // إضافة الطالب الجديد
+      updateDataOnGitHub(); // تشغيل GitHub Action لتحديث البيانات على GitHub
+      closeModal(); // إغلاق النافذة المنبثقة بعد الحفظ
+    });
+
+    // عند تحميل الصفحة، نجلب البيانات
+    window.onload = fetchStudents;
+
     // تفعيل زر تسجيل الخروج
     function logout() {
       alert('تم تسجيل الخروج');
       window.location.href = 'login.html';
     }
-
-    // عند تحميل الصفحة، نجلب البيانات
-    window.onload = fetchStudents;
   </script>
 </body>
 </html>
