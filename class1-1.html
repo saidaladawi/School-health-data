@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الحالات الصحية - الصف الأول (1) | مدرسة حي السعد</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2ecc71;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #34495e;
+        }
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: var(--dark-color);
+            background-color: var(--light-color);
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            border-radius: 10px 10px 0 0;
+        }
+        h1, h2 {
+            margin: 0;
+        }
+        .health-card {
+            background-color: var(--light-color);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        .health-card:hover {
+            transform: translateY(-5px);
+        }
+        .student-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: white;
+        }
+        .status-normal { background-color: var(--secondary-color); }
+        .status-medium { background-color: var(--warning-color); }
+        .status-critical { background-color: var(--danger-color); }
+        .condition, .procedure {
+            margin-top: 10px;
+        }
+        .label {
+            font-weight: bold;
+            color: var(--dark-color);
+        }
+        .emergency-info, .nurse-info {
+            background-color: var(--light-color);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            color: var(--dark-color);
+        }
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            .health-card {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>الحالات الصحية - مدرسة حي السعد</h1>
+            <h2>الصف الأول - الفصل 1</h2>
+        </header>
+
+        <main>
+            <div class="health-card">
+                <div class="student-name">نبأ ناصر اليعربي</div>
+                <span class="status status-medium">متوسط</span>
+                <div class="condition">
+                    <span class="label">الحالة المرضية:</span>
+                    تشتت انتباه حاد وإصابة سابقة في الفخذ
+                </div>
+                <div class="procedure">
+                    <span class="label">الإجراء:</span>
+                    توفير دعم تعليمي إضافي، والسماح بفترات راحة قصيرة. مراقبة حركتها لتجنب الإجهاد الزائد على الفخذ.
+                </div>
+            </div>
+
+            <div class="health-card">
+                <div class="student-name">منار محمد الجديدي</div>
+                <span class="status status-medium">متوسط</span>
+                <div class="condition">
+                    <span class="label">الحالة المرضية:</span>
+                    حساسية شديدة من المكسرات
+                </div>
+                <div class="procedure">
+                    <span class="label">الإجراء:</span>
+                    منع تناول أي أطعمة تحتوي على مكسرات. إبلاغ جميع المعلمين والطاقم بحالتها. الاحتفاظ بحقنة الأدرينالين في مكتب الممرضة.
+                </div>
+            </div>
+
+            <div class="emergency-info">
+                <h3>إجراءات الطوارئ</h3>
+                <ul>
+                    <li>في حالة الإصابات الخطيرة، أبلغ ممرضة المدرسة وإدارة المدرسة فوراً.</li>
+                    <li>حافظ على هدوئك وطمأنة الطلاب الآخرين.</li>
+                    <li>اتبع خطة الطوارئ المحددة لكل حالة.</li>
+                </ul>
+            </div>
+
+            <div class="nurse-info">
+                <h3>معلومات الاتصال بممرضة الصحة المدرسية</h3>
+                <p><strong>الاسم:</strong> هبة بنت حمد الشقصية</p>
+                <p><strong>رقم الهاتف:</strong> 95422679</p>
+            </div>
+        </main>
+
+        <footer>
+            <p>"صحة أطفالنا هي بذرة مستقبلنا المشرق"</p>
+            <p>© 2024 حي السعد للتعليم الأساسي - جميع الحقوق محفوظة</p>
+        </footer>
+    </div>
+</body>
+</html>
