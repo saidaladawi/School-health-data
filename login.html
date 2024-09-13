@@ -41,11 +41,20 @@
       const passwordInput = document.getElementById('password').value;
 
       // جلب بيانات الممرضات من ملف nurses.json في مستودع GitHub
-      fetch('https://api.github.com/repos/saidaladawi/School-health-data/contents/nurses.json', {
+      fetch('https://api.github.com/repos/saidaladawi/School-health-data/actions/workflows/verify-nurse-login.yml/dispatches', {
+        method: 'POST',
         headers: {
-          'Authorization': 'token YOUR_GITHUB_TOKEN', // استبدل YOUR_GITHUB_TOKEN بالتوكن الخاص بك أو اجعله مخزن كـ Secret في GitHub Actions
-          'Accept': 'application/vnd.github.v3+json'
-        }
+          'Authorization': 'Bearer YOUR_GITHUB_TOKEN',
+          'Accept': 'application/vnd.github.v3+json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          ref: "main", // الفرع الرئيسي
+          inputs: {
+            username: usernameInput,
+            password: passwordInput
+          }
+        })
       })
       .then(response => {
         if (!response.ok) {
