@@ -5,11 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>نظام إدارة الحالات الصحية المدرسية</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"> <!-- مكتبة الأيقونات -->
 </head>
 <body class="bg-gray-100 font-sans leading-normal tracking-normal">
+
   <!-- الهيدر -->
   <header class="bg-green-500 p-4 text-white">
-    <div class="container mx-auto flex justify-between">
+    <div class="container mx-auto flex justify-between items-center">
       <h1 class="text-xl font-bold">مدرسة حي السعد للتعليم الأساسي (1-4)</h1>
       <img src="school-logo.png" alt="شعار المدرسة" class="w-16 h-16">
     </div>
@@ -18,13 +20,26 @@
 
   <!-- المحتوى الأساسي -->
   <main class="container mx-auto mt-10 p-5">
+
+    <!-- قسم الشرح -->
     <div class="text-center">
       <h2 class="text-2xl font-bold text-gray-700">نظام إدارة الحالات الصحية المدرسية</h2>
-      <p class="mt-4 text-gray-600">مرحبًا بك في النظام المركزي لإدارة الحالات الصحية في المدرسة. قم باستخدام QR Code في الفصل لعرض معلومات الطلاب الصحية.</p>
-      <p class="mt-2 text-gray-600">للممرضة، يمكنك الوصول إلى لوحة التحكم لإدارة الحالات الصحية.</p>
+      <p class="mt-4 text-gray-600">مرحبًا بك في النظام المركزي لإدارة الحالات الصحية في المدرسة.</p>
+
+      <!-- شرح للمعلم -->
+      <section class="mt-8 bg-white p-6 rounded shadow-lg">
+        <h3 class="text-lg font-semibold text-green-500 mb-4"><i class="fas fa-qrcode"></i> كيفية استخدام QR Code</h3>
+        <p class="text-gray-700">عندما تصل إلى الفصل، قم بمسح رمز الـ QR Code المثبت على باب الفصل باستخدام كاميرا هاتفك المحمول.</p>
+        <p class="text-gray-700 mt-2">ستفتح لك صفحة تحتوي على أسماء الطلاب الذين يحتاجون إلى رعاية صحية خاصة، مع تفاصيل حول حالتهم الصحية والتعليمات المناسبة لكل حالة.</p>
+        <p class="text-gray-700 mt-2">إذا كان لديك أي استفسارات، يمكنك التواصل مع ممرضة المدرسة مباشرة.</p>
+        <img src="qr-scan-illustration.png" alt="كيفية مسح QR" class="mt-4 mx-auto w-64">
+      </section>
 
       <!-- رابط إلى لوحة تحكم الممرضة -->
-      <a href="nurse-dashboard.html" class="inline-block mt-6 bg-green-500 text-white py-2 px-4 rounded shadow hover:bg-green-700">لوحة تحكم الممرضة</a>
+      <a href="login.html" class="inline-block mt-6 bg-green-500 text-white py-2 px-4 rounded shadow hover:bg-green-700">
+        <i class="fas fa-user-nurse"></i> لوحة تحكم الممرضة
+      </a>
+
     </div>
   </main>
 
@@ -33,5 +48,6 @@
     <p>"صحة أطفالنا هي بذرة مستقبلنا المشرق"</p>
     <p>© 2024 حي السعد للتعليم الأساسي - جميع الحقوق محفوظة</p>
   </footer>
+
 </body>
 </html>
