@@ -29,7 +29,7 @@
     document.getElementById('loginForm').addEventListener('submit', function(event) {
       event.preventDefault();
 
-      fetch('https://api.github.com/repos/yourusername/yourrepository/contents/nurses.json')
+      fetch('https://api.github.com/repos/saidaladawi/School-health-data/contents/nurses.json')
         .then(response => response.json())
         .then(data => {
           // تحويل بيانات الـ JSON من base64
