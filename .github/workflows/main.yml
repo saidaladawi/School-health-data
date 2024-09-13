@@ -1,0 +1,32 @@
+name: Update Students Health Data
+
+# تشغيل العمل عند الطلب من واجهة المستخدم
+on:
+  workflow_dispatch:
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+
+    steps:
+    # سحب المستودع
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    # جلب وتحديث البيانات
+    - name: Fetch and Update students data from GitHub
+      run: |
+        echo "Fetching the latest data..."
+        curl -H "Authorization: token ${{ secrets.MY_GITHUB_TOKEN }}" \
+        -H "Content-Type: application/json" \
+        -X GET https://api.github.com/repos/saidaladawi/School-health-data/contents/students_health.json \
+        -o students_health.json
+        
+        # هنا يمكنك إضافة الأوامر لتحديث البيانات
+        
+        echo "Committing the changes..."
+        git config --global user.email "you@example.com"
+        git config --global user.name "Your Name"
+        git add students_health.json
+        git commit -m "Update students health data"
+        git push
