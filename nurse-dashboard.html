@@ -1,351 +1,145 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام إدارة الصحة المدرسية - حي السعد للتعليم الأساسي</title>
-    <style>
-        :root {
-            --primary-color: #3498db;
-            --secondary-color: #2ecc71;
-            --warning-color: #f39c12;
-            --danger-color: #e74c3c;
-            --light-color: #ecf0f1;
-            --dark-color: #34495e;
-        }
-        body {
-            font-family: 'Arial', sans-serif;
-            line-height: 1.6;
-            color: var(--dark-color);
-            background-color: var(--light-color);
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        header {
-            background-color: var(--primary-color);
-            color: white;
-            text-align: center;
-            padding: 1rem 0;
-        }
-        nav ul {
-            list-style-type: none;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            background-color: var(--dark-color);
-        }
-        nav ul li {
-            margin: 0;
-        }
-        nav ul li a {
-            color: white;
-            text-decoration: none;
-            padding: 10px 15px;
-            display: block;
-            transition: background-color 0.3s;
-        }
-        nav ul li a:hover {
-            background-color: var(--primary-color);
-        }
-        main {
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            margin-top: 20px;
-            padding: 20px;
-        }
-        h2 {
-            color: var(--primary-color);
-            border-bottom: 2px solid var(--light-color);
-            padding-bottom: 10px;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        input[type="text"], select, textarea {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 16px;
-        }
-        button {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        button:hover {
-            background-color: #2980b9;
-        }
-        .health-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-        .health-card {
-            background-color: var(--light-color);
-            border-radius: 8px;
-            padding: 15px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease;
-        }
-        .health-card:hover {
-            transform: translateY(-5px);
-        }
-        .status {
-            display: inline-block;
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: bold;
-            color: white;
-        }
-        .status-mild { background-color: var(--secondary-color); }
-        .status-moderate { background-color: var(--warning-color); }
-        .status-severe { background-color: var(--danger-color); }
-        .card-actions {
-            margin-top: 10px;
-        }
-        .card-actions button {
-            margin-right: 5px;
-        }
-        #qr-codes {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 20px;
-            margin-top: 20px;
-        }
-        .qr-code {
-            text-align: center;
-            background-color: white;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        footer {
-            text-align: center;
-            margin-top: 20px;
-            padding: 10px;
-            background-color: var(--dark-color);
-            color: white;
-        }
-        @media (max-width: 768px) {
-            .health-cards {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لوحة تحكم الممرضة</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
-    <header>
-        <div class="container">
-            <h1>نظام إدارة الصحة المدرسية</h1>
-            <p>حي السعد للتعليم الأساسي</p>
+<body class="bg-gray-100">
+
+  <!-- الهيدر -->
+  <header class="bg-green-500 p-4 text-white flex justify-between items-center">
+    <h1 class="text-xl font-bold">مدرسة حي السعد للتعليم الأساسي (1-4) - لوحة تحكم الممرضة</h1>
+    <button onclick="logout()" class="bg-red-500 text-white py-1 px-4 rounded">تسجيل الخروج</button>
+  </header>
+
+  <!-- المحتوى الرئيسي -->
+  <main class="container mx-auto mt-8 p-4 bg-white shadow-lg rounded">
+    <h2 class="text-2xl font-bold text-gray-700">الحالات الصحية للطلاب</h2>
+    
+    <!-- قائمة الحالات الصحية -->
+    <section class="mt-6">
+      <table class="w-full table-auto border-collapse">
+        <thead>
+          <tr class="bg-gray-200 text-gray-600">
+            <th class="p-2">الاسم</th>
+            <th class="p-2">الصف</th>
+            <th class="p-2">الفصل</th>
+            <th class="p-2">الحالة الصحية</th>
+            <th class="p-2">شدة الحالة</th>
+            <th class="p-2">الإجراءات</th>
+            <th class="p-2">خيارات</th>
+          </tr>
+        </thead>
+        <tbody id="studentsTable"></tbody>
+      </table>
+    </section>
+
+    <!-- زر لإضافة حالة جديدة -->
+    <div class="mt-6">
+      <button onclick="openAddForm()" class="bg-green-500 text-white py-2 px-4 rounded">إضافة حالة جديدة</button>
+    </div>
+    
+    <!-- نموذج لإضافة أو تعديل حالة -->
+    <section id="formSection" class="hidden mt-8">
+      <h3 id="formTitle" class="text-xl font-bold text-gray-700"></h3>
+      <form id="healthForm" class="mt-4">
+        <input type="hidden" id="studentId" />
+        <div class="mb-4">
+          <label for="name" class="block text-gray-700">اسم الطالب</label>
+          <input type="text" id="name" class="w-full p-2 border rounded" required />
         </div>
-    </header>
+        <div class="mb-4">
+          <label for="class" class="block text-gray-700">الصف</label>
+          <input type="text" id="class" class="w-full p-2 border rounded" required />
+        </div>
+        <div class="mb-4">
+          <label for="section" class="block text-gray-700">الفصل</label>
+          <input type="text" id="section" class="w-full p-2 border rounded" required />
+        </div>
+        <div class="mb-4">
+          <label for="healthCondition" class="block text-gray-700">الحالة الصحية</label>
+          <textarea id="healthCondition" class="w-full p-2 border rounded" required></textarea>
+        </div>
+        <div class="mb-4">
+          <label for="severity" class="block text-gray-700">شدة الحالة</label>
+          <select id="severity" class="w-full p-2 border rounded">
+            <option value="بسيطة">بسيطة</option>
+            <option value="متوسطة">متوسطة</option>
+            <option value="حرجة">حرجة</option>
+          </select>
+        </div>
+        <div class="mb-4">
+          <label for="action" class="block text-gray-700">الإجراءات</label>
+          <textarea id="action" class="w-full p-2 border rounded"></textarea>
+        </div>
+        <button type="submit" class="bg-green-500 text-white py-2 px-4 rounded">حفظ</button>
+        <button type="button" onclick="closeForm()" class="bg-red-500 text-white py-2 px-4 rounded">إلغاء</button>
+      </form>
+    </section>
+  </main>
 
-    <nav>
-        <ul>
-            <li><a href="#add-case">إضافة حالة</a></li>
-            <li><a href="#view-cases">عرض الحالات</a></li>
-            <li><a href="#generate-qr">توليد QR</a></li>
-        </ul>
-    </nav>
+  <script>
+    const apiUrl = 'https://api.github.com/repos/yourusername/yourrepository/contents/students_health.json';
 
-    <main class="container">
-        <section id="add-case">
-            <h2>إضافة أو تعديل حالة صحية</h2>
-            <form id="health-case-form">
-                <div class="form-group">
-                    <label for="student-name">اسم الطالب:</label>
-                    <input type="text" id="student-name" required>
-                </div>
-                <div class="form-group">
-                    <label for="grade">الصف:</label>
-                    <select id="grade" required onchange="updateSections()">
-                        <option value="">اختر الصف</option>
-                        <option value="1">الصف الأول</option>
-                        <option value="2">الصف الثاني</option>
-                        <option value="3">الصف الثالث</option>
-                        <option value="4">الصف الرابع</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="section">الفصل:</label>
-                    <select id="section" required>
-                        <option value="">اختر الفصل</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="health-condition">الحالة الصحية:</label>
-                    <textarea id="health-condition" required></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="severity">الشدة:</label>
-                    <select id="severity" required>
-                        <option value="">اختر الشدة</option>
-                        <option value="mild">بسيطة</option>
-                        <option value="moderate">متوسطة</option>
-                        <option value="severe">حرجة</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="action">الإجراء المطلوب:</label>
-                    <textarea id="action" required></textarea>
-                </div>
-                <button type="submit" id="submit-btn">إضافة / تحديث الحالة</button>
-            </form>
-        </section>
+    // جلب بيانات الطلاب من GitHub
+    function fetchStudents() {
+      fetch(apiUrl)
+        .then(response => response.json())
+        .then(data => {
+          const content = atob(data.content);
+          const students = JSON.parse(content).students;
+          renderStudents(students);
+        })
+        .catch(error => console.error('Error fetching data:', error));
+    }
 
-        <section id="view-cases">
-            <h2>عرض الحالات الصحية</h2>
-            <div class="health-cards" id="health-cards-container">
-                <!-- سيتم ملء هذا الجزء بواسطة JavaScript -->
-            </div>
-        </section>
+    // عرض الحالات الصحية في الجدول
+    function renderStudents(students) {
+      const tableBody = document.getElementById('studentsTable');
+      tableBody.innerHTML = '';
+      students.forEach(student => {
+        const row = `
+          <tr>
+            <td class="p-2">${student.name}</td>
+            <td class="p-2">${student.class}</td>
+            <td class="p-2">${student.section}</td>
+            <td class="p-2">${student.healthCondition}</td>
+            <td class="p-2">${student.severity}</td>
+            <td class="p-2">${student.action}</td>
+            <td class="p-2">
+              <button onclick="editStudent(${student.id})" class="bg-yellow-500 text-white py-1 px-2 rounded">تعديل</button>
+              <button onclick="deleteStudent(${student.id})" class="bg-red-500 text-white py-1 px-2 rounded">حذف</button>
+            </td>
+          </tr>
+        `;
+        tableBody.innerHTML += row;
+      });
+    }
 
-        <section id="generate-qr">
-            <h2>توليد روابط QR للفصول</h2>
-            <div id="qr-codes">
-                <!-- سيتم إضافة رموز QR هنا بواسطة JavaScript -->
-            </div>
-        </section>
-    </main>
+    // فتح النموذج لإضافة أو تعديل حالة
+    function openAddForm() {
+      document.getElementById('formTitle').innerText = 'إضافة حالة جديدة';
+      document.getElementById('healthForm').reset();
+      document.getElementById('studentId').value = '';
+      document.getElementById('formSection').classList.remove('hidden');
+    }
 
-    <footer>
-        <p>© 2024 حي السعد للتعليم الأساسي - جميع الحقوق محفوظة</p>
-    </footer>
+    function editStudent(id) {
+      // الحصول على بيانات الطالب وتعبئة النموذج
+    }
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script>
-        // استرجاع البيانات المخزنة أو إنشاء مصفوفة فارغة
-        let healthCases = JSON.parse(localStorage.getItem('healthCases')) || [];
+    function deleteStudent(id) {
+      // حذف الطالب
+    }
 
-        function updateSections() {
-            const grade = document.getElementById('grade').value;
-            const sectionSelect = document.getElementById('section');
-            sectionSelect.innerHTML = '<option value="">اختر الفصل</option>';
-            
-            if (grade) {
-                for (let i = 1; i <= 6; i++) {
-                    const option = document.createElement('option');
-                    option.value = i;
-                    option.textContent = `الفصل ${i}`;
-                    sectionSelect.appendChild(option);
-                }
-            }
-        }
+    function closeForm() {
+      document.getElementById('formSection').classList.add('hidden');
+    }
 
-        function renderHealthCases() {
-            const container = document.getElementById('health-cards-container');
-            container.innerHTML = '';
-            healthCases.forEach((case, index) => {
-                const card = document.createElement('div');
-                card.className = 'health-card';
-                card.innerHTML = `
-                    <h3>${case.name}</h3>
-                    <p>الصف: ${case.grade} - الفصل: ${case.section}</p>
-                    <p>الحالة الصحية: ${case.condition}</p>
-                    <p>الشدة: <span class="status status-${case.severity}">${case.severity}</span></p>
-                    <p>الإجراء: ${case.action}</p>
-                    <div class="card-actions">
-                        <button onclick="editCase(${index})">تعديل</button>
-                        <button onclick="deleteCase(${index})">حذف</button>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-        }
-
-        function editCase(index) {
-            const case = healthCases[index];
-            document.getElementById('student-name').value = case.name;
-            document.getElementById('grade').value = case.grade;
-            updateSections();
-            document.getElementById('section').value = case.section;
-            document.getElementById('health-condition').value = case.condition;
-            document.getElementById('severity').value = case.severity;
-            document.getElementById('action').value = case.action;
-            document.getElementById('health-case-form').dataset.editIndex = index;
-            document.getElementById('submit-btn').textContent = 'تحديث الحالة';
-        }
-
-        function deleteCase(index) {
-            if (confirm('هل أنت متأكد من حذف هذه الحالة؟')) {
-                healthCases.splice(index, 1);
-                localStorage.setItem('healthCases', JSON.stringify(healthCases));
-                renderHealthCases();
-            }
-        }
-
-        function generateQRCodes() {
-            const container = document.getElementById('qr-codes');
-            container.innerHTML = '';
-            for (let grade = 1; grade <= 4; grade++) {
-                for (let section = 1; section <= 6; section++) {
-                    const qrDiv = document.createElement('div');
-                    qrDiv.className = 'qr-code';
-                    new QRCode(qrDiv, {
-                        text: `https://yourschoolwebsite.com/class/${grade}/${section}`,
-                        width: 128,
-                        height: 128
-                    });
-                    const label = document.createElement('p');
-                    label.textContent = `الصف ${grade} - الفصل ${section}`;
-                    qrDiv.appendChild(label);
-                    container.appendChild(qrDiv);
-                }
-            }
-        }
-
-        document.getElementById('health-case-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const formData = {
-                name: document.getElementById('student-name').value,
-                grade: document.getElementById('grade').value,
-                section: document.getElementById('section').value,
-                condition: document.getElementById('health-condition').value,
-                severity: document.getElementById('severity').value,
-                action: document.getElementById('action').value
-            };
-
-            const editIndex = this.dataset.editIndex;
-            if (editIndex !== undefined) {
-                healthCases[editIndex] = formData;
-                delete this.dataset.editIndex;
-                document.getElementById('submit-btn').textContent = 'إضافة الحالة';
-            } else {
-                healthCases.push(formData);
-            }
-
-            localStorage.setItem('healthCases', JSON.stringify(healthCases));
-            renderHealthCases();
-            this.reset();
-            updateSections();
-        });
-
-        // تحميل البيانات وتهيئة الصفحة عند التحميل
-        document.addEventListener('DOMContentLoaded', function() {
-            renderHealthCases();
-            generateQRCodes();
-            updateSections();
-        });
-    </script>
+    // عند تحميل الصفحة، نجلب البيانات
+    window.onload = fetchStudents;
+  </script>
 </body>
 </html>
