@@ -5,6 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>لوحة تحكم الممرضة</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Cairo', sans-serif;
+      text-align: right;
+      direction: rtl;
+    }
+    .card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="bg-gray-100">
 
@@ -16,47 +31,61 @@
 
   <!-- المحتوى الرئيسي -->
   <main class="container mx-auto mt-8 p-4 bg-white shadow-lg rounded">
+
     <h2 class="text-2xl font-bold text-gray-700">الحالات الصحية للطلاب</h2>
     
-    <!-- قائمة الحالات الصحية -->
-    <section class="mt-6">
-      <table class="w-full table-auto border-collapse">
-        <thead>
-          <tr class="bg-gray-200 text-gray-600">
-            <th class="p-2">الاسم</th>
-            <th class="p-2">الصف</th>
-            <th class="p-2">الفصل</th>
-            <th class="p-2">الحالة الصحية</th>
-            <th class="p-2">شدة الحالة</th>
-            <th class="p-2">الإجراءات</th>
-            <th class="p-2">خيارات</th>
-          </tr>
-        </thead>
-        <tbody id="studentsTable"></tbody>
-      </table>
+    <!-- عرض الإحصائيات -->
+    <div class="mt-6">
+      <canvas id="healthChart" width="400" height="150"></canvas>
+    </div>
+
+    <!-- عرض الطلاب حسب الصفوف -->
+    <section class="mt-10">
+      <h3 class="text-xl font-semibold text-gray-600 mb-4">الصف الأول</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- بطاقة الطالب -->
+        <div class="card bg-white p-4 rounded shadow-lg">
+          <h4 class="text-lg font-bold text-green-600">محمد بن سعيد</h4>
+          <p class="text-gray-700">الفصل: الأول</p>
+          <p class="text-gray-700">الحالة الصحية: حساسية متوسطة</p>
+          <p class="text-gray-700">شدة الحالة: متوسطة</p>
+          <p class="text-gray-700">الإجراءات: مراقبة خاصة أثناء الوجبات</p>
+          <button class="mt-4 bg-yellow-500 text-white py-1 px-4 rounded">تعديل</button>
+          <button class="mt-4 bg-red-500 text-white py-1 px-4 rounded">حذف</button>
+        </div>
+        <!-- أضف بقية البطاقات هنا -->
+      </div>
+      
+      <!-- أضف الصفوف الأخرى بنفس الطريقة -->
     </section>
 
-    <!-- زر لإضافة حالة جديدة -->
-    <div class="mt-6">
-      <button onclick="openAddForm()" class="bg-green-500 text-white py-2 px-4 rounded">إضافة حالة جديدة</button>
-    </div>
-    
-    <!-- نموذج لإضافة أو تعديل حالة -->
-    <section id="formSection" class="hidden mt-8">
-      <h3 id="formTitle" class="text-xl font-bold text-gray-700"></h3>
+    <!-- نموذج لإضافة حالة جديدة -->
+    <section id="formSection" class="mt-10">
+      <h3 class="text-xl font-bold text-gray-700">إضافة حالة صحية جديدة</h3>
       <form id="healthForm" class="mt-4">
-        <input type="hidden" id="studentId" />
         <div class="mb-4">
           <label for="name" class="block text-gray-700">اسم الطالب</label>
           <input type="text" id="name" class="w-full p-2 border rounded" required />
         </div>
         <div class="mb-4">
           <label for="class" class="block text-gray-700">الصف</label>
-          <input type="text" id="class" class="w-full p-2 border rounded" required />
+          <select id="class" class="w-full p-2 border rounded" required>
+            <option value="1">الصف الأول</option>
+            <option value="2">الصف الثاني</option>
+            <option value="3">الصف الثالث</option>
+            <option value="4">الصف الرابع</option>
+          </select>
         </div>
         <div class="mb-4">
           <label for="section" class="block text-gray-700">الفصل</label>
-          <input type="text" id="section" class="w-full p-2 border rounded" required />
+          <select id="section" class="w-full p-2 border rounded" required>
+            <option value="1">الفصل الأول</option>
+            <option value="2">الفصل الثاني</option>
+            <option value="3">الفصل الثالث</option>
+            <option value="4">الفصل الرابع</option>
+            <option value="5">الفصل الخامس</option>
+            <option value="6">الفصل السادس</option>
+          </select>
         </div>
         <div class="mb-4">
           <label for="healthCondition" class="block text-gray-700">الحالة الصحية</label>
@@ -70,76 +99,53 @@
             <option value="حرجة">حرجة</option>
           </select>
         </div>
-        <div class="mb-4">
-          <label for="action" class="block text-gray-700">الإجراءات</label>
-          <textarea id="action" class="w-full p-2 border rounded"></textarea>
-        </div>
         <button type="submit" class="bg-green-500 text-white py-2 px-4 rounded">حفظ</button>
-        <button type="button" onclick="closeForm()" class="bg-red-500 text-white py-2 px-4 rounded">إلغاء</button>
       </form>
     </section>
   </main>
 
+  <footer class="bg-gray-800 text-white mt-10 p-4 text-center">
+    <p>"صحة أطفالنا هي بذرة مستقبلنا المشرق"</p>
+    <p>© 2024 حي السعد للتعليم الأساسي - جميع الحقوق محفوظة</p>
+  </footer>
+
   <script>
-    const apiUrl = 'https://api.github.com/repos/yourusername/yourrepository/contents/students_health.json';
+    // إحصائيات باستخدام Chart.js
+    const ctx = document.getElementById('healthChart').getContext('2d');
+    const healthChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['الصف الأول', 'الصف الثاني', 'الصف الثالث', 'الصف الرابع'],
+        datasets: [{
+          label: 'عدد الحالات الصحية',
+          data: [5, 8, 3, 7], // تعديل البيانات حسب الحاجة
+          backgroundColor: ['#4CAF50', '#FF9800', '#F44336', '#2196F3']
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
 
-    // جلب بيانات الطلاب من GitHub
-    function fetchStudents() {
-      fetch(apiUrl)
-        .then(response => response.json())
-        .then(data => {
-          const content = atob(data.content);
-          const students = JSON.parse(content).students;
-          renderStudents(students);
-        })
-        .catch(error => console.error('Error fetching data:', error));
+    // تفعيل زر تسجيل الخروج
+    function logout() {
+      // هنا يمكنك إضافة منطق تسجيل الخروج الفعلي
+      alert('تم تسجيل الخروج');
+      window.location.href = 'login.html';
     }
 
-    // عرض الحالات الصحية في الجدول
-    function renderStudents(students) {
-      const tableBody = document.getElementById('studentsTable');
-      tableBody.innerHTML = '';
-      students.forEach(student => {
-        const row = `
-          <tr>
-            <td class="p-2">${student.name}</td>
-            <td class="p-2">${student.class}</td>
-            <td class="p-2">${student.section}</td>
-            <td class="p-2">${student.healthCondition}</td>
-            <td class="p-2">${student.severity}</td>
-            <td class="p-2">${student.action}</td>
-            <td class="p-2">
-              <button onclick="editStudent(${student.id})" class="bg-yellow-500 text-white py-1 px-2 rounded">تعديل</button>
-              <button onclick="deleteStudent(${student.id})" class="bg-red-500 text-white py-1 px-2 rounded">حذف</button>
-            </td>
-          </tr>
-        `;
-        tableBody.innerHTML += row;
-      });
-    }
-
-    // فتح النموذج لإضافة أو تعديل حالة
-    function openAddForm() {
-      document.getElementById('formTitle').innerText = 'إضافة حالة جديدة';
-      document.getElementById('healthForm').reset();
-      document.getElementById('studentId').value = '';
-      document.getElementById('formSection').classList.remove('hidden');
-    }
-
-    function editStudent(id) {
-      // الحصول على بيانات الطالب وتعبئة النموذج
-    }
-
-    function deleteStudent(id) {
-      // حذف الطالب
-    }
-
-    function closeForm() {
-      document.getElementById('formSection').classList.add('hidden');
-    }
-
-    // عند تحميل الصفحة، نجلب البيانات
-    window.onload = fetchStudents;
+    // إضافة وظائف النموذج
+    const form = document.getElementById('healthForm');
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      alert('تم إضافة الحالة الصحية بنجاح!');
+      form.reset();
+    });
   </script>
 </body>
 </html>
