@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحكم الممرضة - نظام الصحة المدرسية</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>لوحة تحكم الممرضة</h1>
+        <nav>
+            <ul>
+                <li><a href="#add-case">إضافة حالة</a></li>
+                <li><a href="#view-cases">عرض الحالات</a></li>
+                <li><a href="#generate-qr">توليد QR</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="add-case">
+            <h2>إضافة حالة صحية جديدة</h2>
+            <form id="health-case-form">
+                <input type="text" id="student-name" placeholder="اسم الطالب" required>
+                <select id="class" required>
+                    <option value="">اختر الصف</option>
+                    <option value="1">الصف الأول</option>
+                    <option value="2">الصف الثاني</option>
+                    <option value="3">الصف الثالث</option>
+                    <option value="4">الصف الرابع</option>
+                </select>
+                <textarea id="health-condition" placeholder="الحالة الصحية" required></textarea>
+                <select id="severity" required>
+                    <option value="">اختر الشدة</option>
+                    <option value="mild">بسيطة</option>
+                    <option value="moderate">متوسطة</option>
+                    <option value="severe">حرجة</option>
+                </select>
+                <input type="text" id="action" placeholder="الإجراء المطلوب" required>
+                <button type="submit">إضافة الحالة</button>
+            </form>
+        </section>
+
+        <section id="view-cases">
+            <h2>عرض الحالات الصحية</h2>
+            <table id="health-cases-table">
+                <thead>
+                    <tr>
+                        <th>اسم الطالب</th>
+                        <th>الصف</th>
+                        <th>الحالة الصحية</th>
+                        <th>الشدة</th>
+                        <th>الإجراء</th>
+                        <th>العمليات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- سيتم ملء هذا الجزء بواسطة JavaScript -->
+                </tbody>
+            </table>
+        </section>
+
+        <section id="generate-qr">
+            <h2>توليد روابط QR للفصول</h2>
+            <div id="qr-codes">
+                <!-- سيتم إضافة رموز QR هنا بواسطة JavaScript -->
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2024 حي السعد للتعليم الأساسي - جميع الحقوق محفوظة</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="scripts.js"></script>
+</body>
+</html>
