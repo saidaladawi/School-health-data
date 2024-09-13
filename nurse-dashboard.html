@@ -54,22 +54,26 @@
     <h2 class="text-2xl font-bold text-gray-700">الحالات الصحية للطلاب</h2>
 
     <!-- ميزة البحث والفرز -->
-    <div class="flex items-center mt-6 space-x-4">
-      <input type="text" id="searchInput" onkeyup="searchStudents()" class="p-2 border rounded w-1/2" placeholder="ابحث عن طالب أو حالة صحية">
-      <select id="filterClass" onchange="filterStudents()" class="p-2 border rounded">
+    <div class="flex items-center mt-6 space-x-4 justify-between">
+      <div class="w-full">
+        <input type="text" id="searchInput" class="p-2 border rounded w-full" placeholder="ابحث عن طالب أو حالة صحية">
+      </div>
+      <button onclick="searchStudents()" class="bg-blue-500 text-white py-2 px-4 rounded">بحث</button>
+      <select id="filterClass" class="p-2 border rounded">
         <option value="">تصفية حسب الصف</option>
         <option value="1">الصف الأول</option>
         <option value="2">الصف الثاني</option>
         <option value="3">الصف الثالث</option>
         <option value="4">الصف الرابع</option>
       </select>
-      <select id="filterSeverity" onchange="filterStudents()" class="p-2 border rounded">
+      <select id="filterSeverity" class="p-2 border rounded">
         <option value="">تصفية حسب شدة الحالة</option>
         <option value="بسيطة">بسيطة</option>
         <option value="متوسطة">متوسطة</option>
         <option value="حرجة">حرجة</option>
       </select>
-      <button onclick="exportToPDF()" class="bg-blue-500 text-white py-2 px-4 rounded">تصدير البيانات</button>
+      <button onclick="filterStudents()" class="bg-green-500 text-white py-2 px-4 rounded">تصفية</button>
+      <button onclick="exportToPDF()" class="bg-yellow-500 text-white py-2 px-4 rounded">تصدير البيانات</button>
     </div>
 
     <!-- عرض الإحصائيات -->
@@ -147,7 +151,7 @@
   </footer>
 
   <script>
-    const apiUrl = 'https://api.github.com/repos/saidaladawi/School-health-data/contents/students_health.json';
+    const apiUrl = 'https://api.github.com/repos/yourusername/yourrepository/contents/students_health.json';
     let studentsData = [];
 
     // جلب بيانات الطلاب من GitHub
