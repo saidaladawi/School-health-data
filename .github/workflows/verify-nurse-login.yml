@@ -1,0 +1,32 @@
+name: Verify Nurse Login
+
+on:
+  workflow_dispatch: # يمكن تشغيله عند الطلب من خلال واجهة المستخدم (POST request)
+
+jobs:
+  verify-login:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Fetch Nurses Data
+      run: |
+        echo "Fetching nurses data..."
+        curl -H "Authorization: token ${{ secrets.MY_GITHUB_TOKEN }}" \
+             -H "Content-Type: application/json" \
+             -X GET https://api.github.com/repos/saidaladawi/School-health-data/contents/nurses.json \
+             -o nurses.json
+
+        # هنا نقوم بعملية التحقق (تتم برمجياً بناءً على المدخلات)
+        username=${{ github.event.inputs.username }}
+        password=${{ github.event.inputs.password }}
+
+        # تحقق بسيط عبر bash من تطابق اسم المستخدم وكلمة المرور
+        if grep -q "\"username\": \"$username\"" nurses.json && grep -q "\"password\": \"$password\"" nurses.json; then
+          echo "Login successful!"
+        else
+          echo "Login failed: Invalid credentials"
+          exit 1
+        fi
