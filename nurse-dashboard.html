@@ -15,8 +15,8 @@
       theme: {
         extend: {
           colors: {
-            'primary': '#10B981',
-            'secondary': '#065F46',
+            'primary': '#1E40AF',
+            'secondary': '#1E3A8A',
           }
         }
       }
@@ -30,9 +30,12 @@
   </style>
 </head>
 <body class="bg-gray-100">
-  <header class="bg-primary text-white shadow-lg">
+  <header class="bg-gradient-to-r from-primary to-secondary text-white shadow-lg">
     <div class="container mx-auto px-4 py-6 flex justify-between items-center">
-      <h1 class="text-2xl font-bold">لوحة تحكم الممرضة - مدرسة حي السعد للتعليم الأساسي (1-4)</h1>
+      <div class="flex items-center">
+        <img src="/api/placeholder/80/80" alt="شعار المدرسة" class="w-16 h-16 mr-4 rounded-full border-2 border-white">
+        <h1 class="text-2xl font-bold">لوحة تحكم الممرضة - مدرسة حي السعد للتعليم الأساسي (1-4)</h1>
+      </div>
       <div class="flex items-center space-x-4">
         <span id="nurseName" class="font-semibold"></span>
         <button onclick="logout()" class="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded transition duration-300">
@@ -95,7 +98,9 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
       <div class="bg-white p-6 rounded-lg shadow-md">
         <h2 class="text-xl font-bold text-primary mb-4">توزيع الحالات الصحية</h2>
-        <canvas id="healthChart"></canvas>
+        <div class="w-full h-64">
+          <canvas id="healthChart"></canvas>
+        </div>
       </div>
       <div class="bg-white p-6 rounded-lg shadow-md">
         <h2 class="text-xl font-bold text-primary mb-4">الحالات الصحية حسب الصف</h2>
@@ -126,27 +131,9 @@
       <h3 class="text-lg font-bold text-primary mb-4">إضافة حالة صحية جديدة</h3>
       <form id="healthForm">
         <div class="mb-4">
-          <label for="name" class="block text-sm font-medium text-gray-700">اسم الطالب</label>
-          <input type="text" id="name" name="name" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
-        </div>
-        <div class="mb-4">
-          <label for="class" class="block text-sm font-medium text-gray-700">الصف</label>
-          <select id="class" name="class" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
-            <option value="1">الصف الأول</option>
-            <option value="2">الصف الثاني</option>
-            <option value="3">الصف الثالث</option>
-            <option value="4">الصف الرابع</option>
-          </select>
-        </div>
-        <div class="mb-4">
-          <label for="section" class="block text-sm font-medium text-gray-700">الفصل</label>
-          <select id="section" name="section" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
-            <option value="1">الفصل 1</option>
-            <option value="2">الفصل 2</option>
-            <option value="3">الفصل 3</option>
-            <option value="4">الفصل 4</option>
-            <option value="5">الفصل 5</option>
-            <option value="6">الفصل 6</option>
+          <label for="studentSelect" class="block text-sm font-medium text-gray-700">اختر الطالب</label>
+          <select id="studentSelect" name="studentSelect" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+            <option value="">اختر الطالب</option>
           </select>
         </div>
         <div class="mb-4">
@@ -221,16 +208,18 @@
     };
 
     // جلب بيانات الطلاب
-    function fetchStudents() {
-      fetch(apiUrl)
-        .then(response => response.json())
-        .then(data => {
-          studentsData = data.students;
-          renderStudents(studentsData);
-          updateQuickStats();
-          renderCharts();
-        })
-        .catch(error => console.error('Error fetching data:', error));
+    async function fetchStudents() {
+      try {
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+        studentsData = data.students;
+        renderStudents(studentsData);
+        updateQuickStats();
+        renderCharts();
+        populateStudentSelect();
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
     }
 
     // عرض بطاقات الطلاب
@@ -242,10 +231,13 @@
         const card = `
           <div class="bg-white p-4 rounded-lg shadow-md border-t-4 ${severityColor}">
             <h4 class="text-lg font-bold text-primary">${student.name}</h4>
-            <p class="text-gray-600">الصف: ${student.class} - الفصل: ${student.section}</p>
-            <p class="text-gray-700 mt-2">الحالة الصحية: ${student.healthCondition}</p>
-            <p class="font-semibold ${severityColor.replace('border', 'text')}">شدة الحالة: ${student.severity}</p>
-            <p class="text-gray-700 mt-2">الإجراء: ${student.action}</p>
+            <p class="text-gray-600"><strong>الصف:</strong> ${student.class} - <strong>الفصل:</strong> ${student.section}</p>
+            <p class="text-gray-700 mt-2"><strong>الحالة الصحية:</strong> ${student.healthCondition}</p>
+            <p class="font-semibold ${severityColor.replace('border', 'text')}"><strong>شدة الحالة:</strong> ${student.severity}</p>
+            <p class="text-gray-700 mt-2"><strong>الإجراء:</strong> ${student.action}</p>
+            <button onclick="deleteHealthCondition('${student.name}')" class="mt-2 bg-red-500 text-white py-1 px-2 rounded text-sm hover:bg-red-600 transition duration-300">
+              حذف الحالة <i class="fas fa-trash-alt"></i>
+            </button>
           </div>
         `;
         cardsContainer.innerHTML += card;
@@ -294,7 +286,8 @@
       }, {});
 
       // مخطط توزيع الحالات الصحية
-      new Chart(document.getElementById('healthChart'), {
+      const healthCtx = document.getElementById('healthChart').getContext('2d');
+      new Chart(healthCtx, {
         type: 'doughnut',
         data: {
           labels: ['بسيطة', 'متوسطة', 'حرجة'],
@@ -305,6 +298,7 @@
         },
         options: {
           responsive: true,
+          maintainAspectRatio: false,
           plugins: {
             legend: {
               position: 'bottom',
@@ -312,13 +306,25 @@
             title: {
               display: true,
               text: 'توزيع الحالات الصحية'
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  const label = context.label || '';
+                  const value = context.raw || 0;
+                  const total = context.dataset.data.reduce((acc, data) => acc + data, 0);
+                  const percentage = ((value / total) * 100).toFixed(1);
+                  return `${label}: ${value} (${percentage}%)`;
+                }
+              }
             }
           }
         }
       });
 
       // مخطط الحالات حسب الصف
-      new Chart(document.getElementById('classChart'), {
+      const classCtx = document.getElementById('classChart').getContext('2d');
+      new Chart(classCtx, {
         type: 'bar',
         data: {
           labels: ['الصف الأول', 'الصف الثاني', 'الصف الثالث', 'الصف الرابع'],
@@ -372,7 +378,7 @@
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
 
-      // إضافة شعار المدرسة (يمكنك استبدال هذا برابط الشعار الفعلي)
+      // إضافة شعار المدرسة
       doc.addImage('/api/placeholder/100/100', 'PNG', 10, 10, 30, 30);
 
       // إضافة معلومات المدرسة
@@ -407,7 +413,7 @@
         body: data,
         startY: 100,
         styles: { font: "helvetica", fontSize: 8, halign: "right" },
-        headStyles: { fillColor: [16, 185, 129] },
+        headStyles: { fillColor: [30, 64, 175] },
         alternateRowStyles: { fillColor: [240, 250, 245] },
         margin: { top: 100 }
       });
@@ -419,12 +425,12 @@
     function generateQRCode() {
       const qrClass = document.getElementById('qrClass').value;
       const qrSection = document.getElementById('qrSection').value;
-      const qrData = `https://example.com/class/${qrClass}/section/${qrSection}`;
+      const qrData = `https://example.com/class-page.html?class=${qrClass}&section=${qrSection}`;
       
       const qrCodeContainer = document.getElementById('qrCodeContainer');
       qrCodeContainer.innerHTML = '';
       
-      QRCode.toCanvas(qrCodeContainer, qrData, function (error) {
+      QRCode.toCanvas(qrCodeContainer, qrData, { width: 200, height: 200 }, function (error) {
         if (error) console.error(error);
         console.log('QR code generated!');
       });
@@ -433,6 +439,9 @@
     // فتح النافذة المنبثقة
     function openModal(modalId) {
       document.getElementById(modalId).classList.remove('hidden');
+      if (modalId === 'addHealthModal') {
+        populateStudentSelect();
+      }
     }
 
     // إغلاق النافذة المنبثقة
@@ -454,29 +463,203 @@
       }
     }
 
+    // ملء قائمة الطلاب في نموذج إضافة الحالة الصحية
+    function populateStudentSelect() {
+      const studentSelect = document.getElementById('studentSelect');
+      studentSelect.innerHTML = '<option value="">اختر الطالب</option>';
+      
+      studentsData.forEach(student => {
+        const option = document.createElement('option');
+        option.value = student.name;
+        option.textContent = student.name;
+        studentSelect.appendChild(option);
+      });
+    }
+
     // إضافة حالة صحية جديدة
     document.getElementById('healthForm').addEventListener('submit', function(e) {
       e.preventDefault();
-      const newStudent = {
-        name: document.getElementById('name').value,
-        class: document.getElementById('class').value,
-        section: document.getElementById('section').value,
+      const studentName = document.getElementById('studentSelect').value;
+      const newHealth = {
         healthCondition: document.getElementById('healthCondition').value,
         severity: document.getElementById('severity').value,
         action: document.getElementById('action').value
       };
-      studentsData.push(newStudent);
+
+      const existingStudentIndex = studentsData.findIndex(student => student.name === studentName);
+      if (existingStudentIndex !== -1) {
+        // تحديث الحالة الصحية للطالب الموجود
+        studentsData[existingStudentIndex] = {...studentsData[existingStudentIndex], ...newHealth};
+      } else {
+        // إضافة طالب جديد (يجب أن يكون هذا نادرًا لأننا نستخدم قائمة منسدلة)
+        const newStudent = {
+          name: studentName,
+          class: document.getElementById('class').value,
+          section: document.getElementById('section').value,
+          ...newHealth
+        };
+        studentsData.push(newStudent);
+      }
+
+      saveDataToJSON();
       renderStudents(studentsData);
       updateQuickStats();
       renderCharts();
       closeModal('addHealthModal');
-      // هنا يمكنك إضافة كود لإرسال البيانات الجديدة إلى الخادم
     });
+
+    // حذف حالة صحية
+    function deleteHealthCondition(studentName) {
+      if (confirm(`هل أنت متأكد من حذف الحالة الصحية للطالب ${studentName}؟`)) {
+        studentsData = studentsData.filter(student => student.name !== studentName);
+        saveDataToJSON();
+        renderStudents(studentsData);
+        updateQuickStats();
+        renderCharts();
+      }
+    }
+
+    // حفظ البيانات في ملف JSON
+    function saveDataToJSON() {
+      const jsonData = JSON.stringify({ students: studentsData }, null, 2);
+      // هنا يجب إضافة الكود لحفظ البيانات على الخادم
+      console.log('Data saved:', jsonData);
+      // يمكنك استخدام fetch لإرسال البيانات إلى الخادم
+      // fetch('/api/save-data', {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   },
+      //   body: jsonData,
+      // }).then(response => console.log('Data saved successfully'))
+      //   .catch(error => console.error('Error saving data:', error));
+    }
 
     // تسجيل الخروج
     function logout() {
       sessionStorage.removeItem('nurseName');
       window.location.href = 'login.html';
+    }
+
+    // استدعاء وظيفة جلب البيانات عند تحميل الصفحة
+    window.onload = function() {
+      fetchStudents();
+      document.getElementById('nurseName').textContent = sessionStorage.getItem('nurseName') || 'الممرضة';
+    };
+
+    // إضافة مستمعي الأحداث لأزرار البحث والفرز
+    document.getElementById('searchInput').addEventListener('input', searchAndFilterStudents);
+    document.getElementById('filterClass').addEventListener('change', searchAndFilterStudents);
+    document.getElementById('filterSeverity').addEventListener('change', searchAndFilterStudents);
+
+    // تحسين أداء الرسوم البيانية
+    let healthChart, classChart;
+
+    function updateCharts() {
+      if (healthChart) healthChart.destroy();
+      if (classChart) classChart.destroy();
+      renderCharts();
+    }
+
+    // تحديث الرسوم البيانية عند تغيير البيانات
+    function updateDashboard() {
+      renderStudents(studentsData);
+      updateQuickStats();
+      updateCharts();
+    }
+
+    // تحسين وظيفة حفظ البيانات
+    async function saveDataToJSON() {
+      const jsonData = JSON.stringify({ students: studentsData }, null, 2);
+      try {
+        const response = await fetch('https://api.github.com/repos/saidaladawi/School-health-data/contents/students_health.json', {
+          method: 'PUT',
+          headers: {
+            'Authorization': `token ${YOUR_GITHUB_TOKEN}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            message: 'Update students health data',
+            content: btoa(jsonData),
+            sha: await getFileSHA()
+          })
+        });
+        
+        if (response.ok) {
+          console.log('Data saved successfully to GitHub');
+        } else {
+          throw new Error('Failed to save data');
+        }
+      } catch (error) {
+        console.error('Error saving data:', error);
+        alert('حدث خطأ أثناء حفظ البيانات. يرجى المحاولة مرة أخرى.');
+      }
+    }
+
+    // الحصول على SHA الحالي للملف
+    async function getFileSHA() {
+      const response = await fetch('https://api.github.com/repos/saidaladawi/School-health-data/contents/students_health.json');
+      const data = await response.json();
+      return data.sha;
+    }
+
+    // تحسين وظيفة إضافة حالة صحية جديدة
+    document.getElementById('healthForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const studentName = document.getElementById('studentSelect').value;
+      const newHealth = {
+        healthCondition: document.getElementById('healthCondition').value,
+        severity: document.getElementById('severity').value,
+        action: document.getElementById('action').value
+      };
+
+      const existingStudentIndex = studentsData.findIndex(student => student.name === studentName);
+      if (existingStudentIndex !== -1) {
+        studentsData[existingStudentIndex] = {...studentsData[existingStudentIndex], ...newHealth};
+      } else {
+        const newStudent = {
+          name: studentName,
+          class: document.getElementById('class').value,
+          section: document.getElementById('section').value,
+          ...newHealth
+        };
+        studentsData.push(newStudent);
+      }
+
+      await saveDataToJSON();
+      updateDashboard();
+      closeModal('addHealthModal');
+      alert('تم حفظ الحالة الصحية بنجاح');
+    });
+
+    // تحسين وظيفة حذف حالة صحية
+    async function deleteHealthCondition(studentName) {
+      if (confirm(`هل أنت متأكد من حذف الحالة الصحية للطالب ${studentName}؟`)) {
+        studentsData = studentsData.filter(student => student.name !== studentName);
+        await saveDataToJSON();
+        updateDashboard();
+        alert('تم حذف الحالة الصحية بنجاح');
+      }
+    }
+
+    // تحسين وظيفة توليد رمز QR
+    function generateQRCode() {
+      const qrClass = document.getElementById('qrClass').value;
+      const qrSection = document.getElementById('qrSection').value;
+      const qrData = `https://example.com/class-page.html?class=${qrClass}&section=${qrSection}`;
+      
+      const qrCodeContainer = document.getElementById('qrCodeContainer');
+      qrCodeContainer.innerHTML = '';
+      
+      QRCode.toCanvas(qrCodeContainer, qrData, { width: 200, height: 200 }, function (error) {
+        if (error) console.error(error);
+        const downloadLink = document.createElement('a');
+        downloadLink.href = qrCodeContainer.querySelector('canvas').toDataURL('image/png');
+        downloadLink.download = `QR_Code_Class${qrClass}_Section${qrSection}.png`;
+        downloadLink.innerHTML = 'تحميل رمز QR';
+        downloadLink.className = 'mt-4 bg-primary hover:bg-secondary text-white font-bold py-2 px-4 rounded transition duration-300';
+        qrCodeContainer.appendChild(downloadLink);
+      });
     }
   </script>
 </body>
