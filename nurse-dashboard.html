@@ -656,23 +656,26 @@
 
     // تحسين وظيفة توليد رمز QR
     function generateQRCode() {
-      const qrClass = document.getElementById('qrClass').value;
-      const qrSection = document.getElementById('qrSection').value;
-      const qrData = `https://example.com/class-page.html?class=${qrClass}&section=${qrSection}`;
-      
-      const qrCodeContainer = document.getElementById('qrCodeContainer');
-      qrCodeContainer.innerHTML = '';
-      
-      QRCode.toCanvas(qrCodeContainer, qrData, { width: 200, height: 200 }, function (error) {
+    const qrClass = document.getElementById('qrClass').value;
+    const qrSection = document.getElementById('qrSection').value;
+    const qrData = `https://example.com/class-page.html?class=${qrClass}&section=${qrSection}`;
+    
+    const qrCodeContainer = document.getElementById('qrCodeContainer');
+    qrCodeContainer.innerHTML = '';
+    
+    QRCode.toCanvas(qrCodeContainer, qrData, { width: 200, height: 200 }, function (error) {
         if (error) console.error(error);
+        console.log('QR code generated!');
+        
+        // إضافة رابط التحميل
         const downloadLink = document.createElement('a');
         downloadLink.href = qrCodeContainer.querySelector('canvas').toDataURL('image/png');
-        downloadLink.download = `QR_Code_Class${qrClass}_Section${qrSection}.png`;
+        downloadLink.download = `QR_Class${qrClass}_Section${qrSection}.png`;
         downloadLink.innerHTML = 'تحميل رمز QR';
-        downloadLink.className = 'mt-4 bg-primary hover:bg-secondary text-white font-bold py-2 px-4 rounded transition duration-300';
+        downloadLink.className = 'mt-4 inline-block bg-primary hover:bg-secondary text-white font-bold py-2 px-4 rounded transition duration-300';
         qrCodeContainer.appendChild(downloadLink);
-      });
-    }
+    });
+}
   </script>
 </body>
 </html>
