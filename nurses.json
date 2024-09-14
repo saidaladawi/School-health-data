@@ -2,7 +2,18 @@
   "nurses": [
     {
       "username": "hibah",
-      "password": "Jawal86437"  // يمكن لاحقًا تشفير كلمات المرور لمزيد من الأمان
+      "password": "Jawal86437",
+      "name": "هبة بنت حمد الشقصية"
+    },
+    {
+      "username": "ahmed",
+      "password": "password123",
+      "name": "أحمد بن سعيد"
+    },
+    {
+      "username": "fatima",
+      "password": "securePass456",
+      "name": "فاطمة بنت علي"
     }
   ]
 }
