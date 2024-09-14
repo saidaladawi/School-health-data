@@ -1,249 +1,397 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>لوحة تحكم الممرضة</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <title>لوحة تحكم الممرضة - مدرسة حي السعد للتعليم الأساسي</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'primary': '#10B981',
+            'secondary': '#065F46',
+          }
+        }
+      }
+    }
+  </script>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap');
     body {
-      font-family: 'Cairo', sans-serif;
-      text-align: right;
-      direction: rtl;
-    }
-    .card {
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    .card:hover {
-      transform: translateY(-10px);
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-    }
-    .modal {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.7);
-      display: none;
-      justify-content: center;
-      align-items: center;
-    }
-    .modal-content {
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-      width: 400px;
+      font-family: 'Tajawal', sans-serif;
     }
   </style>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.13/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body class="bg-gray-100">
-  <header class="bg-green-500 p-4 text-white flex justify-between items-center">
-    <h1 class="text-xl font-bold">مدرسة حي السعد للتعليم الأساسي (1-4) - لوحة تحكم الممرضة</h1>
-    <button onclick="logout()" class="bg-red-500 text-white py-1 px-4 rounded">تسجيل الخروج</button>
+  <header class="bg-primary text-white shadow-lg">
+    <div class="container mx-auto px-4 py-6 flex justify-between items-center">
+      <h1 class="text-2xl font-bold">لوحة تحكم الممرضة - مدرسة حي السعد للتعليم الأساسي (1-4)</h1>
+      <div class="flex items-center space-x-4">
+        <span id="nurseName" class="font-semibold"></span>
+        <button onclick="logout()" class="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded transition duration-300">
+          تسجيل الخروج <i class="fas fa-sign-out-alt mr-2"></i>
+        </button>
+      </div>
+    </div>
   </header>
 
-  <main class="container mx-auto mt-8 p-4 bg-white shadow-lg rounded">
-    <h2 class="text-2xl font-bold text-gray-700">الحالات الصحية للطلاب</h2>
-
-    <!-- ميزة البحث والفرز -->
-    <div class="flex items-center mt-6 space-x-4 justify-between">
-      <div class="w-full">
-        <input type="text" id="searchInput" class="p-2 border rounded w-full" placeholder="ابحث عن طالب أو حالة صحية">
+  <main class="container mx-auto mt-8 p-4">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <!-- إضافة حالة صحية جديدة -->
+      <div class="bg-white p-6 rounded-lg shadow-md">
+        <h2 class="text-xl font-bold text-primary mb-4">إضافة حالة صحية جديدة</h2>
+        <button onclick="openModal('addHealthModal')" class="w-full bg-primary hover:bg-secondary text-white font-bold py-2 px-4 rounded transition duration-300">
+          إضافة حالة جديدة <i class="fas fa-plus-circle mr-2"></i>
+        </button>
       </div>
-      <button onclick="searchStudents()" class="bg-blue-500 text-white py-2 px-4 rounded">بحث</button>
-      <select id="filterClass" class="p-2 border rounded">
-        <option value="">تصفية حسب الصف</option>
-        <option value="1">الصف الأول</option>
-        <option value="2">الصف الثاني</option>
-        <option value="3">الصف الثالث</option>
-        <option value="4">الصف الرابع</option>
-      </select>
-      <select id="filterSeverity" class="p-2 border rounded">
-        <option value="">تصفية حسب شدة الحالة</option>
-        <option value="بسيطة">بسيطة</option>
-        <option value="متوسطة">متوسطة</option>
-        <option value="حرجة">حرجة</option>
-      </select>
-      <button onclick="filterStudents()" class="bg-green-500 text-white py-2 px-4 rounded">تصفية</button>
-      <button onclick="exportToPDF()" class="bg-yellow-500 text-white py-2 px-4 rounded">تصدير البيانات</button>
+      <!-- إحصائيات سريعة -->
+      <div class="bg-white p-6 rounded-lg shadow-md">
+        <h2 class="text-xl font-bold text-primary mb-4">إحصائيات سريعة</h2>
+        <div id="quickStats" class="grid grid-cols-2 gap-4">
+          <!-- سيتم ملؤها بالبيانات -->
+        </div>
+      </div>
+      <!-- توليد رمز QR -->
+      <div class="bg-white p-6 rounded-lg shadow-md">
+        <h2 class="text-xl font-bold text-primary mb-4">توليد رمز QR للفصول</h2>
+        <button onclick="openModal('qrModal')" class="w-full bg-primary hover:bg-secondary text-white font-bold py-2 px-4 rounded transition duration-300">
+          توليد رمز QR <i class="fas fa-qrcode mr-2"></i>
+        </button>
+      </div>
     </div>
 
-    <!-- عرض الإحصائيات -->
-    <div class="mt-6">
-      <canvas id="healthChart" width="400" height="150"></canvas>
+    <!-- البحث والفرز -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+      <h2 class="text-xl font-bold text-primary mb-4">البحث والفرز</h2>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <input type="text" id="searchInput" class="w-full p-2 border rounded" placeholder="ابحث عن طالب أو حالة صحية">
+        <select id="filterClass" class="w-full p-2 border rounded">
+          <option value="">جميع الصفوف</option>
+          <option value="1">الصف الأول</option>
+          <option value="2">الصف الثاني</option>
+          <option value="3">الصف الثالث</option>
+          <option value="4">الصف الرابع</option>
+        </select>
+        <select id="filterSeverity" class="w-full p-2 border rounded">
+          <option value="">جميع الحالات</option>
+          <option value="بسيطة">بسيطة</option>
+          <option value="متوسطة">متوسطة</option>
+          <option value="حرجة">حرجة</option>
+        </select>
+        <button onclick="searchAndFilterStudents()" class="w-full bg-primary hover:bg-secondary text-white font-bold py-2 px-4 rounded transition duration-300">
+          بحث وفرز <i class="fas fa-search mr-2"></i>
+        </button>
+      </div>
     </div>
 
-    <!-- عرض الطلاب حسب الصفوف -->
-    <section class="mt-10">
+    <!-- الرسوم البيانية -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div class="bg-white p-6 rounded-lg shadow-md">
+        <h2 class="text-xl font-bold text-primary mb-4">توزيع الحالات الصحية</h2>
+        <canvas id="healthChart"></canvas>
+      </div>
+      <div class="bg-white p-6 rounded-lg shadow-md">
+        <h2 class="text-xl font-bold text-primary mb-4">الحالات الصحية حسب الصف</h2>
+        <canvas id="classChart"></canvas>
+      </div>
+    </div>
+
+    <!-- قائمة الطلاب -->
+    <div class="bg-white p-6 rounded-lg shadow-md">
+      <h2 class="text-xl font-bold text-primary mb-4">قائمة الحالات الصحية للطلاب</h2>
       <div id="studentsCards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <!-- سيتم عرض بطاقات الطلاب هنا -->
+        <!-- سيتم ملؤها بالبيانات -->
       </div>
-    </section>
-
-    <!-- زر لإضافة حالة جديدة -->
-    <div class="mt-6">
-      <button onclick="openModal()" class="bg-green-500 text-white py-2 px-4 rounded">إضافة حالة جديدة</button>
     </div>
 
-    <!-- نافذة منبثقة لإضافة حالة جديدة -->
-    <div id="addModal" class="modal">
-      <div class="modal-content">
-        <h3 class="text-xl font-bold mb-4">إضافة حالة صحية جديدة</h3>
-        <form id="healthForm">
-          <div class="mb-4">
-            <label for="name" class="block text-gray-700">اسم الطالب</label>
-            <input type="text" id="name" class="w-full p-2 border rounded" required />
-          </div>
-          <div class="mb-4">
-            <label for="class" class="block text-gray-700">الصف</label>
-            <select id="class" class="w-full p-2 border rounded" required>
-              <option value="1">الصف الأول</option>
-              <option value="2">الصف الثاني</option>
-              <option value="3">الصف الثالث</option>
-              <option value="4">الصف الرابع</option>
-            </select>
-          </div>
-          <div class="mb-4">
-            <label for="section" class="block text-gray-700">الفصل</label>
-            <select id="section" class="w-full p-2 border rounded" required>
-              <option value="1">الفصل الأول</option>
-              <option value="2">الفصل الثاني</option>
-              <option value="3">الفصل الثالث</option>
-              <option value="4">الفصل الرابع</option>
-              <option value="5">الفصل الخامس</option>
-              <option value="6">الفصل السادس</option>
-            </select>
-          </div>
-          <div class="mb-4">
-            <label for="healthCondition" class="block text-gray-700">الحالة الصحية</label>
-            <textarea id="healthCondition" class="w-full p-2 border rounded" required></textarea>
-          </div>
-          <div class="mb-4">
-            <label for="severity" class="block text-gray-700">شدة الحالة</label>
-            <select id="severity" class="w-full p-2 border rounded">
-              <option value="بسيطة">بسيطة</option>
-              <option value="متوسطة">متوسطة</option>
-              <option value="حرجة">حرجة</option>
-            </select>
-          </div>
-          <div class="mb-4">
-            <label for="action" class="block text-gray-700">الإجراء المطلوب</label>
-            <textarea id="action" class="w-full p-2 border rounded" required></textarea>
-          </div>
-          <button type="submit" class="bg-green-500 text-white py-2 px-4 rounded">حفظ</button>
-          <button type="button" onclick="closeModal()" class="bg-red-500 text-white py-2 px-4 rounded">إلغاء</button>
-        </form>
-      </div>
+    <!-- زر تصدير البيانات -->
+    <div class="mt-8 text-center">
+      <button onclick="exportToPDF()" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded transition duration-300">
+        تصدير البيانات <i class="fas fa-file-pdf mr-2"></i>
+      </button>
     </div>
   </main>
 
+  <!-- النوافذ المنبثقة -->
+  <!-- نافذة إضافة حالة صحية جديدة -->
+  <div id="addHealthModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+      <h3 class="text-lg font-bold text-primary mb-4">إضافة حالة صحية جديدة</h3>
+      <form id="healthForm">
+        <div class="mb-4">
+          <label for="name" class="block text-sm font-medium text-gray-700">اسم الطالب</label>
+          <input type="text" id="name" name="name" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+        </div>
+        <div class="mb-4">
+          <label for="class" class="block text-sm font-medium text-gray-700">الصف</label>
+          <select id="class" name="class" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+            <option value="1">الصف الأول</option>
+            <option value="2">الصف الثاني</option>
+            <option value="3">الصف الثالث</option>
+            <option value="4">الصف الرابع</option>
+          </select>
+        </div>
+        <div class="mb-4">
+          <label for="section" class="block text-sm font-medium text-gray-700">الفصل</label>
+          <select id="section" name="section" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+            <option value="1">الفصل 1</option>
+            <option value="2">الفصل 2</option>
+            <option value="3">الفصل 3</option>
+            <option value="4">الفصل 4</option>
+            <option value="5">الفصل 5</option>
+            <option value="6">الفصل 6</option>
+          </select>
+        </div>
+        <div class="mb-4">
+          <label for="healthCondition" class="block text-sm font-medium text-gray-700">الحالة الصحية</label>
+          <textarea id="healthCondition" name="healthCondition" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"></textarea>
+        </div>
+        <div class="mb-4">
+          <label for="severity" class="block text-sm font-medium text-gray-700">شدة الحالة</label>
+          <select id="severity" name="severity" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+            <option value="بسيطة">بسيطة</option>
+            <option value="متوسطة">متوسطة</option>
+            <option value="حرجة">حرجة</option>
+          </select>
+        </div>
+        <div class="mb-4">
+          <label for="action" class="block text-sm font-medium text-gray-700">الإجراء المطلوب</label>
+          <textarea id="action" name="action" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"></textarea>
+        </div>
+        <div class="flex justify-end">
+          <button type="submit" class="bg-primary hover:bg-secondary text-white font-bold py-2 px-4 rounded mr-2">حفظ</button>
+          <button type="button" onclick="closeModal('addHealthModal')" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">إلغاء</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- نافذة توليد رمز QR -->
+  <div id="qrModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+      <h3 class="text-lg font-bold text-primary mb-4">توليد رمز QR للفصل</h3>
+      <div class="mb-4">
+        <label for="qrClass" class="block text-sm font-medium text-gray-700">اختر الصف</label>
+        <select id="qrClass" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+          <option value="1">الصف الأول</option>
+          <option value="2">الصف الثاني</option>
+          <option value="3">الصف الثالث</option>
+          <option value="4">الصف الرابع</option>
+        </select>
+      </div>
+      <div class="mb-4">
+        <label for="qrSection" class="block text-sm font-medium text-gray-700">اختر الفصل</label>
+        <select id="qrSection" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+          <option value="1">الفصل 1</option>
+          <option value="2">الفصل 2</option>
+          <option value="3">الفصل 3</option>
+          <option value="4">الفصل 4</option>
+          <option value="5">الفصل 5</option>
+          <option value="6">الفصل 6</option>
+        </select>
+      </div>
+      <div id="qrCodeContainer" class="text-center mb-4"></div>
+      <div class="flex justify-end">
+        <button onclick="generateQRCode()" class="bg-primary hover:bg-secondary text-white font-bold py-2 px-4 rounded mr-2">توليد الرمز</button>
+        <button onclick="closeModal('qrModal')" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">إغلاق</button>
+      </div>
+    </div>
+  </div>
+
   <footer class="bg-gray-800 text-white mt-10 p-4 text-center">
     <p>"صحة أطفالنا هي بذرة مستقبلنا المشرق"</p>
-    <p>© 2024 حي السعد للتعليم الأساسي - جميع الحقوق محفوظة</p>
+    <p>© 2024 مدرسة حي السعد للتعليم الأساسي - جميع الحقوق محفوظة</p>
   </footer>
 
   <script>
-    const apiUrl = 'https://raw.githubusercontent.com/saidaladawi/School-health-data/main/students_health.json';
     let studentsData = [];
+    const apiUrl = 'https://raw.githubusercontent.com/saidaladawi/School-health-data/main/students_health.json';
 
-    // جلب بيانات الطلاب من GitHub
+    // استدعاء البيانات عند تحميل الصفحة
+    window.onload = function() {
+      fetchStudents();
+      document.getElementById('nurseName').textContent = sessionStorage.getItem('nurseName') || 'الممرضة';
+    };
+
+    // جلب بيانات الطلاب
     function fetchStudents() {
       fetch(apiUrl)
         .then(response => response.json())
         .then(data => {
           studentsData = data.students;
           renderStudents(studentsData);
-          renderChart(studentsData);
+          updateQuickStats();
+          renderCharts();
         })
         .catch(error => console.error('Error fetching data:', error));
     }
 
-    // عرض الحالات الصحية في البطاقات
+    // عرض بطاقات الطلاب
     function renderStudents(students) {
       const cardsContainer = document.getElementById('studentsCards');
       cardsContainer.innerHTML = '';
       students.forEach(student => {
+        const severityColor = getSeverityColor(student.severity);
         const card = `
-          <div class="card bg-white p-4 rounded shadow-lg border-t-4 border-green-500">
-            <h4 class="text-lg font-bold text-green-600">${student.name}</h4>
-            <p class="text-gray-700">الصف: ${student.class}</p>
-            <p class="text-gray-700">الفصل: ${student.section}</p>
-            <p class="text-gray-700">الحالة الصحية: ${student.healthCondition}</p>
-            <p class="text-gray-700">شدة الحالة: ${student.severity}</p>
-            <p class="text-gray-700">الإجراء المطلوب: ${student.action}</p>
+          <div class="bg-white p-4 rounded-lg shadow-md border-t-4 ${severityColor}">
+            <h4 class="text-lg font-bold text-primary">${student.name}</h4>
+            <p class="text-gray-600">الصف: ${student.class} - الفصل: ${student.section}</p>
+            <p class="text-gray-700 mt-2">الحالة الصحية: ${student.healthCondition}</p>
+            <p class="font-semibold ${severityColor.replace('border', 'text')}">شدة الحالة: ${student.severity}</p>
+            <p class="text-gray-700 mt-2">الإجراء: ${student.action}</p>
           </div>
         `;
         cardsContainer.innerHTML += card;
       });
     }
 
-    // عرض الإحصائيات باستخدام Chart.js
-    function renderChart(students) {
-      const ctx = document.getElementById('healthChart').getContext('2d');
-      const chartData = {
-        'بسيطة': 0,
-        'متوسطة': 0,
-        'حرجة': 0
-      };
-      students.forEach(student => {
-        chartData[student.severity]++;
-      });
+    // تحديث الإحصائيات السريعة
+    function updateQuickStats() {
+      const totalStudents = studentsData.length;
+      const severityCounts = studentsData.reduce((acc, student) => {
+        acc[student.severity] = (acc[student.severity] || 0) + 1;
+        return acc;
+      }, {});
 
-      new Chart(ctx, {
+      const quickStatsContainer = document.getElementById('quickStats');
+      quickStatsContainer.innerHTML = `
+        <div class="text-center">
+          <p class="text-2xl font-bold text-primary">${totalStudents}</p>
+          <p class="text-gray-600">إجمالي الحالات</p>
+        </div>
+        <div class="text-center">
+          <p class="text-2xl font-bold text-green-500">${severityCounts['بسيطة'] || 0}</p>
+          <p class="text-gray-600">حالات بسيطة</p>
+        </div>
+        <div class="text-center">
+          <p class="text-2xl font-bold text-yellow-500">${severityCounts['متوسطة'] || 0}</p>
+          <p class="text-gray-600">حالات متوسطة</p>
+        </div>
+        <div class="text-center">
+          <p class="text-2xl font-bold text-red-500">${severityCounts['حرجة'] || 0}</p>
+          <p class="text-gray-600">حالات حرجة</p>
+        </div>
+      `;
+    }
+
+    // رسم المخططات البيانية
+    function renderCharts() {
+      const severityCounts = studentsData.reduce((acc, student) => {
+        acc[student.severity] = (acc[student.severity] || 0) + 1;
+        return acc;
+      }, {});
+
+      const classCounts = studentsData.reduce((acc, student) => {
+        acc[student.class] = (acc[student.class] || 0) + 1;
+        return acc;
+      }, {});
+
+      // مخطط توزيع الحالات الصحية
+      new Chart(document.getElementById('healthChart'), {
         type: 'doughnut',
         data: {
           labels: ['بسيطة', 'متوسطة', 'حرجة'],
           datasets: [{
-            label: 'الحالات الصحية',
-            data: [chartData['بسيطة'], chartData['متوسطة'], chartData['حرجة']],
-            backgroundColor: ['#4CAF50', '#FF9800', '#F44336'],
+            data: [severityCounts['بسيطة'] || 0, severityCounts['متوسطة'] || 0, severityCounts['حرجة'] || 0],
+            backgroundColor: ['#10B981', '#FBBF24', '#EF4444']
           }]
         },
         options: {
           responsive: true,
           plugins: {
             legend: {
-              position: 'top',
+              position: 'bottom',
+            },
+            title: {
+              display: true,
+              text: 'توزيع الحالات الصحية'
+            }
+          }
+        }
+      });
+
+      // مخطط الحالات حسب الصف
+      new Chart(document.getElementById('classChart'), {
+        type: 'bar',
+        data: {
+          labels: ['الصف الأول', 'الصف الثاني', 'الصف الثالث', 'الصف الرابع'],
+          datasets: [{
+            label: 'عدد الحالات',
+            data: [classCounts['1'] || 0, classCounts['2'] || 0, classCounts['3'] || 0, classCounts['4'] || 0],
+            backgroundColor: '#60A5FA'
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              display: false
+            },
+            title: {
+              display: true,
+              text: 'الحالات الصحية حسب الصف'
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              title: {
+                display: true,
+                text: 'عدد الحالات'
+              }
             }
           }
         }
       });
     }
 
-    // ميزة البحث
-    function searchStudents() {
-      const query = document.getElementById('searchInput').value.toLowerCase();
-      const filteredStudents = studentsData.filter(student => 
-        student.name.toLowerCase().includes(query) || 
-        student.healthCondition.toLowerCase().includes(query)
-      );
-      renderStudents(filteredStudents);
-    }
-
-    // ميزة التصفية
-    function filterStudents() {
+    // البحث والفرز
+    function searchAndFilterStudents() {
+      const searchQuery = document.getElementById('searchInput').value.toLowerCase();
       const selectedClass = document.getElementById('filterClass').value;
       const selectedSeverity = document.getElementById('filterSeverity').value;
+
       const filteredStudents = studentsData.filter(student => 
+        (searchQuery === '' || student.name.toLowerCase().includes(searchQuery) || student.healthCondition.toLowerCase().includes(searchQuery)) &&
         (selectedClass === '' || student.class === selectedClass) &&
         (selectedSeverity === '' || student.severity === selectedSeverity)
       );
+
       renderStudents(filteredStudents);
     }
 
     // تصدير البيانات إلى PDF
     function exportToPDF() {
       const { jsPDF } = window.jspdf;
-      const doc = new jsPDF('p', 'pt');
+      const doc = new jsPDF();
 
-      doc.text('مدرسة حي السعد للتعليم الأساسي (1-4)', 40, 50);
-      doc.text(`تاريخ: ${new Date().toLocaleDateString()}`, 40, 70);
-      doc.text('اسم الممرضة: هبة بنت حمد الشقصية', 40, 90);
+      // إضافة شعار المدرسة (يمكنك استبدال هذا برابط الشعار الفعلي)
+      doc.addImage('/api/placeholder/100/100', 'PNG', 10, 10, 30, 30);
 
+      // إضافة معلومات المدرسة
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(18);
+      doc.text("مدرسة حي السعد للتعليم الأساسي (1-4)", 200, 20, null, null, "right");
+      
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(12);
+      doc.text("تقرير الحالات الصحية للطلاب", 200, 30, null, null, "right");
+      doc.text(`تاريخ التقرير: ${new Date().toLocaleDateString('ar-OM')}`, 200, 40, null, null, "right");
+
+      // إضافة معلومات الممرضة
+      doc.text("معلومات الممرضة:", 200, 55, null, null, "right");
+      doc.text(`الاسم: ${sessionStorage.getItem('nurseName') || 'غير محدد'}`, 200, 65, null, null, "right");
+      doc.text("رقم الهاتف: XXXXXXXXXX", 200, 75, null, null, "right");
+      doc.text("البريد الإلكتروني: nurse@example.com", 200, 85, null, null, "right");
+
+      // إضافة جدول البيانات
       const headers = [["اسم الطالب", "الصف", "الفصل", "الحالة الصحية", "شدة الحالة", "الإجراء المطلوب"]];
       const data = studentsData.map(student => [
         student.name,
@@ -255,51 +403,60 @@
       ]);
 
       doc.autoTable({
-        startY: 120,
         head: headers,
         body: data,
+        startY: 100,
+        styles: { font: "helvetica", fontSize: 8, halign: "right" },
+        headStyles: { fillColor: [16, 185, 129] },
+        alternateRowStyles: { fillColor: [240, 250, 245] },
+        margin: { top: 100 }
       });
 
-      doc.save('students_health_data.pdf');
+      doc.save("تقرير_الحالات_الصحية_للطلاب.pdf");
     }
 
-    // فتح وإغلاق النافذة المنبثقة
-    function openModal() {
-      document.getElementById('addModal').style.display = 'flex';
-    }
-    function closeModal() {
-      document.getElementById('addModal').style.display = 'none';
-    }
-
-    // تحديث البيانات وإرسالها إلى GitHub باستخدام GitHub Actions
-    function updateDataOnGitHub() {
-      fetch('https://api.github.com/repos/saidaladawi/School-health-data/actions/workflows/students-health-data.yml/dispatches', {
-        method: 'POST',
-        headers: {
-          'Authorization': 'token YOUR_GITHUB_TOKEN',
-          'Accept': 'application/vnd.github.v3+json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          "ref": "main"
-        })
-      })
-      .then(response => {
-        if (response.ok) {
-          alert('تم تحديث البيانات بنجاح');
-        } else {
-          alert('حدث خطأ أثناء التحديث');
-        }
-      })
-      .catch(error => {
-        console.error('Error:', error);
+    // توليد رمز QR
+    function generateQRCode() {
+      const qrClass = document.getElementById('qrClass').value;
+      const qrSection = document.getElementById('qrSection').value;
+      const qrData = `https://example.com/class/${qrClass}/section/${qrSection}`;
+      
+      const qrCodeContainer = document.getElementById('qrCodeContainer');
+      qrCodeContainer.innerHTML = '';
+      
+      QRCode.toCanvas(qrCodeContainer, qrData, function (error) {
+        if (error) console.error(error);
+        console.log('QR code generated!');
       });
     }
 
-    // إرسال الطلب لتحديث ملف JSON ببيانات جديدة
+    // فتح النافذة المنبثقة
+    function openModal(modalId) {
+      document.getElementById(modalId).classList.remove('hidden');
+    }
+
+    // إغلاق النافذة المنبثقة
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.add('hidden');
+    }
+
+    // الحصول على لون الحالة
+    function getSeverityColor(severity) {
+      switch(severity) {
+        case 'بسيطة':
+          return 'border-green-500';
+        case 'متوسطة':
+          return 'border-yellow-500';
+        case 'حرجة':
+          return 'border-red-500';
+        default:
+          return 'border-gray-500';
+      }
+    }
+
+    // إضافة حالة صحية جديدة
     document.getElementById('healthForm').addEventListener('submit', function(e) {
       e.preventDefault();
-
       const newStudent = {
         name: document.getElementById('name').value,
         class: document.getElementById('class').value,
@@ -308,18 +465,17 @@
         severity: document.getElementById('severity').value,
         action: document.getElementById('action').value
       };
-
-      studentsData.push(newStudent); // إضافة الطالب الجديد
-      updateDataOnGitHub(); // تشغيل GitHub Action لتحديث البيانات على GitHub
-      closeModal(); // إغلاق النافذة المنبثقة بعد الحفظ
+      studentsData.push(newStudent);
+      renderStudents(studentsData);
+      updateQuickStats();
+      renderCharts();
+      closeModal('addHealthModal');
+      // هنا يمكنك إضافة كود لإرسال البيانات الجديدة إلى الخادم
     });
 
-    // عند تحميل الصفحة، نجلب البيانات
-    window.onload = fetchStudents;
-
-    // تفعيل زر تسجيل الخروج
+    // تسجيل الخروج
     function logout() {
-      alert('تم تسجيل الخروج');
+      sessionStorage.removeItem('nurseName');
       window.location.href = 'login.html';
     }
   </script>
