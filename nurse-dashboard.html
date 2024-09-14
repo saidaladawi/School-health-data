@@ -572,28 +572,40 @@
     async function saveDataToJSON() {
       const jsonData = JSON.stringify({ students: studentsData }, null, 2);
       try {
-        const response = await fetch('https://api.github.com/repos/saidaladawi/School-health-data/contents/students_health.json', {
-          method: 'PUT',
+        // بدلاً من تحديث الملف مباشرة، سنقوم بتشغيل GitHub Action
+        const response = await fetch('https://api.github.com/repos/saidaladawi/School-health-data/actions/workflows/students-health-data.yml/dispatches', {
+          method: 'POST',
           headers: {
-            'Authorization': `token ${YOUR_GITHUB_TOKEN}`,
+            'Accept': 'application/vnd.github.v3+json',
             'Content-Type': 'application/json',
+            // نستخدم هنا token مؤقت للمصادقة. يجب استبداله بطريقة آمنة للحصول على الـ token
+            'Authorization': 'Bearer ' + await getGitHubToken()
           },
           body: JSON.stringify({
-            message: 'Update students health data',
-            content: btoa(jsonData),
-            sha: await getFileSHA()
+            ref: 'main', // أو اسم الفرع الذي تريد التحديث عليه
+            inputs: {
+              data: btoa(jsonData) // نقوم بتشفير البيانات بـ Base64
+            }
           })
         });
-        
+    
         if (response.ok) {
-          console.log('Data saved successfully to GitHub');
+          console.log('تم بدء عملية تحديث البيانات بنجاح');
+          alert('تم إرسال البيانات للتحديث. قد يستغرق التحديث بضع دقائق ليظهر في المستودع.');
         } else {
-          throw new Error('Failed to save data');
+          throw new Error('فشل في بدء عملية التحديث');
         }
       } catch (error) {
-        console.error('Error saving data:', error);
-        alert('حدث خطأ أثناء حفظ البيانات. يرجى المحاولة مرة أخرى.');
+        console.error('خطأ في حفظ البيانات:', error);
+        alert('حدث خطأ أثناء محاولة تحديث البيانات. يرجى المحاولة مرة أخرى لاحقًا.');
       }
+    }
+    
+    // وظيفة للحصول على الـ token (يجب تنفيذها بشكل آمن، هذا مجرد مثال)
+    async function getGitHubToken() {
+      // في بيئة الإنتاج، يجب الحصول على الـ token بطريقة آمنة
+      // مثلاً من خلال خادم الخلفية الخاص بك
+      return 'YOUR_TEMPORARY_TOKEN_HERE';
     }
 
     // الحصول على SHA الحالي للملف
