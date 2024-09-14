@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الصف الأول - الفصل الأول</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap');
+        body {
+            font-family: 'Tajawal', sans-serif;
+        }
+        .student-card {
+            transition: all 0.3s ease;
+        }
+        .student-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <header class="bg-gradient-to-r from-blue-600 to-blue-800 text-white p-6 shadow-lg">
+        <h1 id="classTitle" class="text-3xl font-bold text-center mb-2">الصف الأول - الفصل الأول</h1>
+        <p class="text-center text-lg">مدرسة حي السعد للتعليم الأساسي</p>
+    </header>
+
+    <main class="container mx-auto mt-6 p-4">
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h2 class="text-2xl font-bold text-blue-800 mb-4">تفاصيل ممرضة المدرسة</h2>
+            <div class="flex items-center space-x-4 space-x-reverse">
+                <img src="/api/placeholder/100/100" alt="صورة الممرضة" class="w-20 h-20 rounded-full border-4 border-blue-500">
+                <div>
+                    <p class="font-bold text-lg">اسم الممرضة: هبة بنت حمد الشقصية</p>
+                    <p>رقم الهاتف: 123-456-7890</p>
+                    <p>البريد الإلكتروني: nurse@school.com</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="studentList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- سيتم ملء هذا القسم بالبيانات من JavaScript -->
+        </div>
+    </main>
+
+    <footer class="bg-gray-800 text-white p-4 mt-10">
+        <p class="text-center">&copy; 2024 مدرسة حي السعد للتعليم الأساسي. جميع الحقوق محفوظة.</p>
+    </footer>
+
+    <script>
+        const apiUrl = 'https://raw.githubusercontent.com/saidaladawi/School-health-data/main/students_health.json';
+
+        async function fetchStudents() {
+            try {
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+                return data.students;
+            } catch (error) {
+                console.error('Error fetching student data:', error);
+                return [];
+            }
+        }
+
+        function getSeverityIcon(severity) {
+            switch(severity) {
+                case 'بسيطة': return '<i class="fas fa-check-circle text-green-500"></i>';
+                case 'متوسطة': return '<i class="fas fa-exclamation-triangle text-yellow-500"></i>';
+                case 'حرجة': return '<i class="fas fa-exclamation-circle text-red-500"></i>';
+                default: return '<i class="fas fa-question-circle text-gray-500"></i>';
+            }
+        }
+
+        function getSeverityColor(severity) {
+            switch(severity) {
+                case 'بسيطة': return 'bg-green-100 border-green-500 text-green-800';
+                case 'متوسطة': return 'bg-yellow-100 border-yellow-500 text-yellow-800';
+                case 'حرجة': return 'bg-red-100 border-red-500 text-red-800';
+                default: return 'bg-gray-100 border-gray-500 text-gray-800';
+            }
+        }
+
+        async function renderStudents() {
+            const students = await fetchStudents();
+            const urlParams = new URLSearchParams(window.location.search);
+            const classNumber = urlParams.get('class') || '1';
+            const sectionNumber = urlParams.get('section') || '1';
+            
+            document.getElementById('classTitle').textContent = `الصف ${classNumber} - الفصل ${sectionNumber}`;
+
+            const filteredStudents = students.filter(student => 
+                student.class === classNumber && student.section === sectionNumber
+            );
+
+            const studentList = document.getElementById('studentList');
+            studentList.innerHTML = filteredStudents.map(student => `
+                <div class="student-card ${getSeverityColor(student.severity)} rounded-lg overflow-hidden shadow-md">
+                    <div class="p-4">
+                        <div class="flex justify-between items-center mb-2">
+                            <h2 class="text-xl font-bold">${student.name}</h2>
+                            ${getSeverityIcon(student.severity)}
+                        </div>
+                        <p class="mb-2"><strong>الحالة الصحية:</strong> ${student.healthCondition}</p>
+                        <p class="mb-2"><strong>شدة الحالة:</strong> ${student.severity}</p>
+                        <p><strong>الإجراء المطلوب:</strong> ${student.action}</p>
+                    </div>
+                    <div class="bg-white p-3 border-t border-gray-200">
+                        <button class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out transform hover:scale-105">
+                            تفاصيل أكثر
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            if (filteredStudents.length === 0) {
+                studentList.innerHTML = '<p class="text-center text-gray-500 text-lg">لا يوجد طلاب مسجلين في هذا الفصل.</p>';
+            }
+        }
+
+        // استدعاء الدالة عند تحميل الصفحة
+        window.onload = renderStudents;
+    </script>
+</body>
+</html>
