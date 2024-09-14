@@ -1,53 +1,119 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>نظام إدارة الحالات الصحية المدرسية</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"> <!-- مكتبة الأيقونات -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'primary': '#10B981',
+            'secondary': '#065F46',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap');
+    body {
+      font-family: 'Tajawal', sans-serif;
+    }
+  </style>
 </head>
-<body class="bg-gray-100 font-sans leading-normal tracking-normal">
-
+<body class="bg-gray-50 text-gray-800">
   <!-- الهيدر -->
-  <header class="bg-green-500 p-4 text-white">
-    <div class="container mx-auto flex justify-between items-center">
-      <h1 class="text-xl font-bold">مدرسة حي السعد للتعليم الأساسي (1-4)</h1>
-      <img src="school-logo.png" alt="شعار المدرسة" class="w-16 h-16">
+  <header class="bg-primary text-white shadow-lg">
+    <div class="container mx-auto px-4 py-6 flex justify-between items-center">
+      <h1 class="text-2xl font-bold">مدرسة حي السعد للتعليم الأساسي (1-4)</h1>
+      <img src="/api/placeholder/80/80" alt="شعار المدرسة" class="w-20 h-20 rounded-full border-4 border-white shadow">
     </div>
-    <p class="mt-2 text-center text-lg">الاهتمام بصحة أطفالنا هو مفتاح مستقبلهم</p>
+    <div class="bg-secondary py-2">
+      <p class="text-center text-lg">الاهتمام بصحة أطفالنا هو مفتاح مستقبلهم</p>
+    </div>
   </header>
 
   <!-- المحتوى الأساسي -->
   <main class="container mx-auto mt-10 p-5">
-
-    <!-- قسم الشرح -->
     <div class="text-center">
-      <h2 class="text-2xl font-bold text-gray-700">نظام إدارة الحالات الصحية المدرسية</h2>
-      <p class="mt-4 text-gray-600">مرحبًا بك في النظام المركزي لإدارة الحالات الصحية في المدرسة.</p>
-
+      <h2 class="text-4xl font-bold text-secondary mb-6">نظام إدارة الحالات الصحية المدرسية</h2>
+      <p class="text-xl text-gray-600 mb-8">مرحبًا بك في النظام المركزي لإدارة الحالات الصحية في المدرسة.</p>
+      
       <!-- شرح للمعلم -->
-      <section class="mt-8 bg-white p-6 rounded shadow-lg">
-        <h3 class="text-lg font-semibold text-green-500 mb-4"><i class="fas fa-qrcode"></i> كيفية استخدام QR Code</h3>
-        <p class="text-gray-700">عندما تصل إلى الفصل، قم بمسح رمز الـ QR Code المثبت على باب الفصل باستخدام كاميرا هاتفك المحمول.</p>
-        <p class="text-gray-700 mt-2">ستفتح لك صفحة تحتوي على أسماء الطلاب الذين يحتاجون إلى رعاية صحية خاصة، مع تفاصيل حول حالتهم الصحية والتعليمات المناسبة لكل حالة.</p>
-        <p class="text-gray-700 mt-2">إذا كان لديك أي استفسارات، يمكنك التواصل مع ممرضة المدرسة مباشرة.</p>
-        <img src="qr-scan-illustration.png" alt="كيفية مسح QR" class="mt-4 mx-auto w-64">
+      <section class="bg-white p-8 rounded-lg shadow-xl mb-10 transition-all duration-300 hover:shadow-2xl">
+        <h3 class="text-2xl font-semibold text-primary mb-6">
+          <i class="fas fa-qrcode mr-2"></i> كيفية استخدام QR Code
+        </h3>
+        <div class="flex flex-wrap items-center justify-center">
+          <div class="w-full md:w-1/2 text-right">
+            <p class="text-gray-700 mb-4">1. عند وصولك إلى الفصل، قم بمسح رمز الـ QR Code المثبت على الباب.</p>
+            <p class="text-gray-700 mb-4">2. ستظهر لك صفحة تحتوي على معلومات الطلاب ذوي الاحتياجات الصحية الخاصة.</p>
+            <p class="text-gray-700 mb-4">3. اطلع على التفاصيل والتعليمات لكل حالة.</p>
+            <p class="text-gray-700">4. للاستفسارات، تواصل مع ممرضة المدرسة عبر الزر أدناه.</p>
+          </div>
+          <div class="w-full md:w-1/2 mt-6 md:mt-0">
+            <img src="/api/placeholder/300/300" alt="كيفية مسح QR" class="mx-auto w-64 rounded-lg shadow-md">
+          </div>
+        </div>
       </section>
 
-      <!-- رابط إلى لوحة تحكم الممرضة -->
-      <a href="login.html" class="inline-block mt-6 bg-green-500 text-white py-2 px-4 rounded shadow hover:bg-green-700">
-        <i class="fas fa-user-nurse"></i> لوحة تحكم الممرضة
-      </a>
-
+      <!-- أزرار التنقل -->
+      <div class="flex flex-wrap justify-center gap-4">
+        <a href="login.html" class="inline-block bg-primary text-white py-3 px-6 rounded-full shadow hover:bg-secondary transition duration-300 text-lg">
+          <i class="fas fa-user-nurse mr-2"></i> لوحة تحكم الممرضة
+        </a>
+        <button id="emergencyBtn" class="inline-block bg-red-500 text-white py-3 px-6 rounded-full shadow hover:bg-red-600 transition duration-300 text-lg">
+          <i class="fas fa-exclamation-triangle mr-2"></i> حالة طارئة
+        </button>
+      </div>
     </div>
   </main>
 
   <!-- الفوتر -->
-  <footer class="bg-gray-800 text-white mt-10 p-4 text-center">
-    <p>"صحة أطفالنا هي بذرة مستقبلنا المشرق"</p>
-    <p>© 2024 حي السعد للتعليم الأساسي - جميع الحقوق محفوظة</p>
+  <footer class="bg-secondary text-white mt-16 py-8 text-center">
+    <div class="container mx-auto px-4">
+      <p class="text-2xl font-bold mb-4">"صحة أطفالنا هي بذرة مستقبلنا المشرق"</p>
+      <p>© 2024 حي السعد للتعليم الأساسي - جميع الحقوق محفوظة</p>
+    </div>
   </footer>
 
+  <!-- نافذة منبثقة للحالات الطارئة -->
+  <div id="emergencyModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
+    <div class="bg-white p-8 rounded-lg shadow-xl max-w-md w-full mx-4">
+      <h3 class="text-2xl font-bold text-red-600 mb-4">حالة طارئة</h3>
+      <p class="mb-6">يرجى الاتصال فورًا بالرقم التالي:</p>
+      <p class="text-3xl font-bold text-center mb-6">119</p>
+      <button id="closeEmergency" class="w-full bg-red-500 text-white py-2 rounded hover:bg-red-600 transition duration-300">إغلاق</button>
+    </div>
+  </div>
+
+  <script>
+    // التعامل مع زر الطوارئ
+    const emergencyBtn = document.getElementById('emergencyBtn');
+    const emergencyModal = document.getElementById('emergencyModal');
+    const closeEmergency = document.getElementById('closeEmergency');
+
+    emergencyBtn.addEventListener('click', () => {
+      emergencyModal.classList.remove('hidden');
+      emergencyModal.classList.add('flex');
+    });
+
+    closeEmergency.addEventListener('click', () => {
+      emergencyModal.classList.add('hidden');
+      emergencyModal.classList.remove('flex');
+    });
+
+    // إغلاق النافذة المنبثقة عند النقر خارجها
+    emergencyModal.addEventListener('click', (e) => {
+      if (e.target === emergencyModal) {
+        emergencyModal.classList.add('hidden');
+        emergencyModal.classList.remove('flex');
+      }
+    });
+  </script>
 </body>
 </html>
