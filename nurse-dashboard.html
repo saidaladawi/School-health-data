@@ -243,13 +243,16 @@
   <script>
     let studentsData = [];
     const apiUrl = 'https://raw.githubusercontent.com/saidaladawi/School-health-data/main/students_health.json';
-
+    
     // استدعاء البيانات عند تحميل الصفحة
     window.onload = function() {
-      fetchStudents();
+      fetchStudents().catch(error => {
+        console.error('Error in window.onload:', error);
+        alert('حدث خطأ أثناء تحميل الصفحة. يرجى تحديث الصفحة أو المحاولة لاحقًا.');
+      });
       document.getElementById('nurseName').textContent = sessionStorage.getItem('nurseName') || 'الممرضة';
     };
-
+    
     // جلب بيانات الطلاب
     async function fetchStudents() {
       try {
@@ -258,6 +261,7 @@
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
+        console.log('Fetched data:', data); // للتحقق من البيانات المستلمة
         studentsData = data.students;
         renderStudents(studentsData);
         updateQuickStats();
@@ -270,6 +274,7 @@
 
     // عرض بطاقات الطلاب
     function renderStudents(students) {
+      console.log('Rendering students:', students);
       const cardsContainer = document.getElementById('studentsCards');
       cardsContainer.innerHTML = '';
       if (students && students.length > 0) {
